@@ -17,5 +17,8 @@
     "url": "https://github.com/Weentl/ClubSite/issues"
   },
   "homepage": "https://github.com/Weentl/ClubSite#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }
