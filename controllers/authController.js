@@ -5,31 +5,30 @@ const User = require('../models/userModel');
 // Registrar usuario
 const register = async (req, res) => {
   const { name, email, password } = req.body;
+  
+  // Verificar si los datos son válidos
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
 
   try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email already in use' });
-    }
+    // Hashear la contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    // Crear el nuevo usuario
     const newUser = new User({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     await newUser.save();
 
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRATION
-    });
-
-    res.status(201).json({ token });
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
